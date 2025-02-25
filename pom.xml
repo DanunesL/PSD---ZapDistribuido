@@ -1,0 +1,166 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>psd.group4</groupId>
+    <artifactId>ZapDistribuido</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>ZapDistribuido</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>17</java.version>
+        <maven-compiler-plugin.source>21</maven-compiler-plugin.source>
+        <maven-compiler-plugin.target>21</maven-compiler-plugin.target>
+        <maven-compiler-plugin.version>3.12.1</maven-compiler-plugin.version>
+        <mongodb-driver-sync.version>5.0.0</mongodb-driver-sync.version>
+        <mongodb-crypt.version>1.8.0</mongodb-crypt.version>
+        <!-- Keeping 1.2.13 until mongodb-crypt makes slf4j-api an optional dependency -->
+        <!-- https://jira.mongodb.org/browse/MONGOCRYPT-602 -->
+        <logback-classic.version>1.2.13</logback-classic.version>
+        <exec-maven-plugin.version>3.1.1</exec-maven-plugin.version>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver-sync</artifactId>
+            <version>4.3.4</version>
+        </dependency>
+
+        <!--
+        <dependency>
+            <groupId>com.github.GoncaloP0710C</groupId>
+            <artifactId>CloudCryptoc</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/CloudCrypto-1.0-SNAPSHOT.jar</systemPath>
+        </dependency>
+        my comment-->
+
+        	<dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk18on</artifactId>
+                <version>1.79</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.GoncaloP0710</groupId>
+                <artifactId>CloudCrypto</artifactId>
+                <version>master-1a324f82d1-1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.emilianobonassi.jpbc</groupId>
+                <artifactId>jpbc-api</artifactId>
+                <version>2.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.emilianobonassi.jpbc</groupId>
+                <artifactId>jpbc-crypto</artifactId>
+                <version>2.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.emilianobonassi.jpbc</groupId>
+                <artifactId>jpbc-plaf</artifactId>
+                <version>2.0.0</version>
+            </dependency>
+
+             <dependency>
+                <groupId>org.mongodb</groupId>
+                <artifactId>mongodb-driver-sync</artifactId>
+                <version>${mongodb-driver-sync.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mongodb</groupId>
+                <artifactId>mongodb-crypt</artifactId>
+                <version>${mongodb-crypt.version}</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback-classic.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>me.tongfei</groupId>
+                <artifactId>progressbar</artifactId>
+                <version>0.10.0</version>
+            </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                <archive>
+                    <manifest>
+                    <mainClass>psd.group4.client.User</mainClass>
+                    </manifest>
+                </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <!-- Adding this plugin, so we don't need to add -Dexec.cleanupDaemonThreads=false in the mvn cmd line -->
+                <!-- to avoid the IllegalThreadStateException when running with Maven -->
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>${exec-maven-plugin.version}</version>
+                <configuration>
+                    <cleanupDaemonThreads>false</cleanupDaemonThreads>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <minimizeJar>true</minimizeJar>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
